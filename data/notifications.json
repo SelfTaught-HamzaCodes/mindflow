@@ -1,0 +1,92 @@
+[
+  {
+    "id": "n1",
+    "title": "Deadline approaching",
+    "message": "Q3 pipeline figures due in under 4 hours.",
+    "priority": "priority",
+    "type": "deadline",
+    "createdAt": "2026-03-18T12:00:00.000Z",
+    "read": false
+  },
+  {
+    "id": "n2",
+    "title": "Contract amendment awaiting signature",
+    "message": "ClientCorp amendment requires confirmation by end of day.",
+    "priority": "priority",
+    "type": "email",
+    "createdAt": "2026-03-18T10:02:00.000Z",
+    "read": false
+  },
+  {
+    "id": "n3",
+    "title": "Meeting reminder",
+    "message": "Leadership sync starts at 4:00 PM.",
+    "priority": "priority",
+    "type": "meeting",
+    "createdAt": "2026-03-18T11:45:00.000Z",
+    "read": false
+  },
+  {
+    "id": "n4",
+    "title": "Task update",
+    "message": "Priya mentioned you in stand-up notes.",
+    "priority": "normal",
+    "type": "mention",
+    "createdAt": "2026-03-18T08:45:00.000Z",
+    "read": true
+  },
+  {
+    "id": "n5",
+    "title": "Newsletter",
+    "message": "Product Hunt digest is ready to read.",
+    "priority": "low",
+    "type": "newsletter",
+    "createdAt": "2026-03-16T16:05:00.000Z",
+    "read": true
+  },
+  {
+    "id": "n6",
+    "title": "Office notice",
+    "message": "Fridge clean-out reminder for Friday.",
+    "priority": "low",
+    "type": "admin",
+    "createdAt": "2026-03-17T06:35:00.000Z",
+    "read": false
+  },
+  {
+    "id": "n7",
+    "title": "CRM sync complete",
+    "message": "Overnight sync finished with 12 updates.",
+    "priority": "low",
+    "type": "system",
+    "createdAt": "2026-03-18T07:10:00.000Z",
+    "read": true
+  },
+  {
+    "id": "n8",
+    "title": "Client reply",
+    "message": "David Park replied about the proposal timeline.",
+    "priority": "priority",
+    "type": "email",
+    "createdAt": "2026-03-18T12:06:00.000Z",
+    "read": false
+  },
+  {
+    "id": "n9",
+    "title": "Invoice logged reminder",
+    "message": "VendorHub invoice #4821 still needs finance entry.",
+    "priority": "normal",
+    "type": "finance",
+    "createdAt": "2026-03-17T11:30:00.000Z",
+    "read": false
+  },
+  {
+    "id": "n10",
+    "title": "CRM notes draft saved",
+    "message": "Your Acme deal notes autosaved successfully.",
+    "priority": "normal",
+    "type": "system",
+    "createdAt": "2026-03-18T12:20:00.000Z",
+    "read": false
+  }
+]

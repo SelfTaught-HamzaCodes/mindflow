@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Mindflow
 
-## Getting Started
+**Designing an Emotion-Aware Adaptive Email and Task Manager to Reduce Workplace Stress**
 
-First, run the development server:
+Interaction Design Final Year Project - research prototype (not a commercial SaaS).
+
+## Research question
+
+Can behavioural interaction data be used to trigger adaptive interface changes that reduce cognitive overload?
+
+## What this prototype does
+
+Mindflow estimates **behavioural cognitive workload** from typing behaviour (speed, pauses, backspaces, consistency) and adapts the email/task interface accordingly.
+
+It does **not** diagnose medical stress. UI labels use:
+
+- Estimated Workload
+- Estimated Cognitive Load
+- Behaviour Estimate
+
+## Adaptive features
+
+1. **Behaviour analysis** - Calm / Neutral / High Cognitive Load
+2. **Adaptive dashboard** - hides secondary widgets, analytics, and low-priority work under high load
+3. **Notification filtering** - urgent/high remain; low priority disappears under high load
+4. **Priority Focus Mode** - today's important emails and tasks only
+5. **Wellness prompt** - breathing / short break reminder after sustained high load
+
+## Tech stack
+
+- Next.js App Router
+- React
+- Tailwind CSS
+- JavaScript (no TypeScript)
+- Lucide Icons
+- Framer Motion
+- React Context (no Redux)
+- Optional Supabase persistence
+
+## Important constraints
+
+- Emails, tasks, and notifications are **sample/fake data** (JSON)
+- No Gmail, Outlook, or Google API connections
+- Demo user: Alex Chen · Sales Coordinator
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### Demo tip for examiners
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Use **Demo override** in the top bar to force Calm / Neutral / High Cognitive Load without reproducing typing patterns. Or type in **Compose** to drive a live behaviour estimate.
 
-## Learn More
+## Optional Supabase
 
-To learn more about Next.js, take a look at the following resources:
+1. Copy `.env.example` to `.env.local`
+2. Add project URL + anon key
+3. Run `supabase/schema.sql` in the Supabase SQL editor
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Without these variables, the app runs entirely on local JSON / in-memory state.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project structure
 
-## Deploy on Vercel
+```
+app/                 Routes (dashboard, inbox, tasks, compose)
+components/          UI, layout, adaptive, email, tasks, dashboard
+context/             AppDataContext, WorkloadContext
+hooks/               useTypingBehaviour
+lib/                 Estimator, adaptation rules, notification filter, Supabase
+data/                Sample emails, tasks, notifications, user
+supabase/            Optional SQL schema
+IMPLEMENTATION_LOG.md
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Dissertation support
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See `IMPLEMENTATION_LOG.md` for milestone-by-milestone implementation notes suitable for Chapter 4 (Implementation). The in-app **Research Panel** exposes live metrics and estimator thresholds for viva demonstrations.
+
+## Scripts
+
+```bash
+npm run dev      # development server
+npm run build    # production build
+npm run start    # start production server
+npm run lint     # eslint
+```

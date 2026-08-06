@@ -1,0 +1,74 @@
+[
+  {
+    "id": "c1",
+    "title": "Pipeline prep block",
+    "description": "Pull CRM figures before Sarah's request deadline.",
+    "start": "2026-03-18T13:00:00.000Z",
+    "end": "2026-03-18T13:45:00.000Z",
+    "location": "Desk · Floor 3",
+    "type": "focus",
+    "attendees": ["Alex Chen"],
+    "today": true,
+    "priority": "high"
+  },
+  {
+    "id": "c2",
+    "title": "Client proposal call prep",
+    "description": "Review Acme talking points and pricing objections.",
+    "start": "2026-03-18T14:00:00.000Z",
+    "end": "2026-03-18T14:30:00.000Z",
+    "location": "Meeting Room B",
+    "type": "meeting",
+    "attendees": ["Alex Chen", "Elena Vargas"],
+    "today": true,
+    "priority": "high"
+  },
+  {
+    "id": "c3",
+    "title": "Leadership sync",
+    "description": "Q3 opportunity review with regional managers.",
+    "start": "2026-03-18T16:00:00.000Z",
+    "end": "2026-03-18T16:45:00.000Z",
+    "location": "Zoom · Leadership",
+    "type": "meeting",
+    "attendees": ["Alex Chen", "Sarah Mitchell", "Priya Desai"],
+    "today": true,
+    "priority": "high"
+  },
+  {
+    "id": "c4",
+    "title": "CRM cleanup",
+    "description": "Optional tidy-up of stale opportunities.",
+    "start": "2026-03-18T17:15:00.000Z",
+    "end": "2026-03-18T17:45:00.000Z",
+    "location": "Desk · Floor 3",
+    "type": "admin",
+    "attendees": ["Alex Chen"],
+    "today": true,
+    "priority": "low"
+  },
+  {
+    "id": "c5",
+    "title": "ClientCorp contract review",
+    "description": "Walk through amendment clauses with legal.",
+    "start": "2026-03-19T10:00:00.000Z",
+    "end": "2026-03-19T10:30:00.000Z",
+    "location": "Legal huddle space",
+    "type": "meeting",
+    "attendees": ["Alex Chen", "James Okonkwo"],
+    "today": false,
+    "priority": "medium"
+  },
+  {
+    "id": "c6",
+    "title": "Onsite visit - briefing",
+    "description": "Final briefing before tomorrow's client visit.",
+    "start": "2026-03-19T15:00:00.000Z",
+    "end": "2026-03-19T15:45:00.000Z",
+    "location": "Conference Room 2",
+    "type": "meeting",
+    "attendees": ["Alex Chen", "Elena Vargas", "David Park"],
+    "today": false,
+    "priority": "high"
+  }
+]

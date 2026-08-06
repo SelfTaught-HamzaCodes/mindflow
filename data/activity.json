@@ -1,0 +1,90 @@
+[
+  {
+    "id": "a1",
+    "actor": "Sarah Mitchell",
+    "actorRole": "Sales Manager",
+    "action": "requested update on",
+    "target": "Q3 pipeline figures",
+    "detail": "Needs opportunity list flagged for at-risk deals before 4pm.",
+    "type": "request",
+    "createdAt": "2026-03-18T12:40:00.000Z",
+    "priority": "high"
+  },
+  {
+    "id": "a2",
+    "actor": "David Park",
+    "actorRole": "Acme Procurement",
+    "action": "replied to",
+    "target": "Proposal timeline",
+    "detail": "Asked to schedule a Thursday follow-up call.",
+    "type": "email",
+    "createdAt": "2026-03-18T12:06:00.000Z",
+    "priority": "high"
+  },
+  {
+    "id": "a3",
+    "actor": "James Okonkwo",
+    "actorRole": "ClientCorp",
+    "action": "shared",
+    "target": "Contract amendment #4821",
+    "detail": "Signature required by end of day.",
+    "type": "document",
+    "createdAt": "2026-03-18T10:02:00.000Z",
+    "priority": "high"
+  },
+  {
+    "id": "a4",
+    "actor": "Priya Desai",
+    "actorRole": "Project Coordinator",
+    "action": "posted",
+    "target": "Stand-up notes",
+    "detail": "Listed Sales follow-ups for Alex under action items.",
+    "type": "mention",
+    "createdAt": "2026-03-18T08:45:00.000Z",
+    "priority": "medium"
+  },
+  {
+    "id": "a5",
+    "actor": "Elena Vargas",
+    "actorRole": "Account Lead",
+    "action": "uploaded",
+    "target": "Client visit briefing pack",
+    "detail": "Key talking points are on page 2.",
+    "type": "document",
+    "createdAt": "2026-03-17T14:35:00.000Z",
+    "priority": "medium"
+  },
+  {
+    "id": "a6",
+    "actor": "Marcus Lee",
+    "actorRole": "VendorHub Billing",
+    "action": "sent",
+    "target": "Invoice #4821",
+    "detail": "Licensing fees ready for finance logging.",
+    "type": "finance",
+    "createdAt": "2026-03-17T11:20:00.000Z",
+    "priority": "medium"
+  },
+  {
+    "id": "a7",
+    "actor": "IT Support",
+    "actorRole": "Northwind IT",
+    "action": "announced",
+    "target": "CRM weekend maintenance",
+    "detail": "Service window Saturday 02:00–04:00.",
+    "type": "system",
+    "createdAt": "2026-03-13T12:05:00.000Z",
+    "priority": "low"
+  },
+  {
+    "id": "a8",
+    "actor": "HR Digest",
+    "actorRole": "People Team",
+    "action": "published",
+    "target": "Optional stretch session",
+    "detail": "Atrium stretch session available at lunch.",
+    "type": "social",
+    "createdAt": "2026-03-16T07:55:00.000Z",
+    "priority": "low"
+  }
+]
