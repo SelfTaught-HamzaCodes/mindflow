@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, HelpCircle, X } from "lucide-react";
 import { useWorkload } from "@/context/WorkloadContext";
+import { usePrefs } from "@/context/PrefsContext";
 import { getExplainabilityReasons } from "@/lib/adaptationSummary";
 import { WORKLOAD_LEVELS } from "@/lib/constants";
 
@@ -11,10 +12,12 @@ import { WORKLOAD_LEVELS } from "@/lib/constants";
  */
 export default function FocusWhyPanel({ open, onClose }) {
   const { metrics, level, forcedLevel } = useWorkload();
+  const { prefs } = usePrefs();
   const effective = forcedLevel || level;
   const reasons = getExplainabilityReasons(
     metrics,
     effective === WORKLOAD_LEVELS.HIGH ? WORKLOAD_LEVELS.HIGH : effective,
+    prefs.typingBaseline,
   );
 
   return (

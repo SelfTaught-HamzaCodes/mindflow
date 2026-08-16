@@ -1,14 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { Check, ChevronDown, ChevronUp, Clock } from "lucide-react";
+import { Check, Clock } from "lucide-react";
 import Badge from "@/components/ui/Badge";
 import { formatRelativeDay } from "@/lib/format";
 import {
   formatEffort,
   getTaskEffortMinutes,
-  getTaskPriorityReasons,
   isPriorityTask,
 } from "@/lib/taskPriorityReasons";
 
@@ -19,22 +17,19 @@ export default function TaskItem({
   highlightPriorities = false,
   emphasizeStyle = false,
 }) {
-  const [whyOpen, setWhyOpen] = useState(false);
   const done = task.status === "done";
   const prioritize = isPriorityTask(task) || task.priority === "high" || task.important;
   const emphasize =
     (highlightPriorities || emphasizeStyle) && prioritize && !done;
   const effort = getTaskEffortMinutes(task);
-  const reasons = getTaskPriorityReasons(task);
 
   return (
     <motion.li
-      layout
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: done ? 0.55 : 1, y: 0 }}
-      exit={{ opacity: 0, y: 12, height: 0, marginBottom: 0 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className={`overflow-hidden rounded-2xl border bg-white shadow-[var(--shadow-sm)] ${
+      initial={false}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
+      className={`rounded-2xl border bg-white shadow-[var(--shadow-sm)] ${
         emphasize
           ? "border-[var(--accent)]/40 bg-[var(--accent-soft)]/40 ring-1 ring-[var(--accent)]/25"
           : "border-[var(--border)]"
@@ -81,7 +76,7 @@ export default function TaskItem({
                     ? "danger"
                     : task.priority === "medium"
                       ? "warning"
-                      : "neutral"
+                    : "neutral"
                 }
               >
                 {task.priority}
@@ -102,45 +97,6 @@ export default function TaskItem({
               <span>Due {formatRelativeDay(task.dueDate)}</span>
             </div>
           </button>
-
-          {!done && prioritize && reasons.length > 0 ? (
-            <div className="mt-3 rounded-xl bg-white/70 px-3 py-2 ring-1 ring-[var(--border)]">
-              <button
-                type="button"
-                onClick={() => {
-                  setWhyOpen((v) => !v);
-                  onInspect?.(task.id);
-                }}
-                className="flex w-full items-center justify-between gap-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded-lg"
-                aria-expanded={whyOpen}
-              >
-                <span className="text-xs font-medium text-[var(--text-primary)]">
-                  Why?
-                </span>
-                {whyOpen ? (
-                  <ChevronUp className="h-3.5 w-3.5 text-[var(--text-muted)]" />
-                ) : (
-                  <ChevronDown className="h-3.5 w-3.5 text-[var(--text-muted)]" />
-                )}
-              </button>
-              {whyOpen ? (
-                <ul className="mt-2 space-y-1.5">
-                  {reasons.map((r) => (
-                    <li
-                      key={r.id}
-                      className="flex items-start gap-2 text-xs text-[var(--text-secondary)]"
-                    >
-                      <Check
-                        className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600"
-                        aria-hidden="true"
-                      />
-                      {r.label}
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </div>
-          ) : null}
         </div>
       </div>
     </motion.li>

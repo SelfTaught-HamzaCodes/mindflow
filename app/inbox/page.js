@@ -7,6 +7,7 @@ import EmailList from "@/components/email/EmailList";
 import EmailDetail from "@/components/email/EmailDetail";
 import { useAppData } from "@/context/AppDataContext";
 import { useWorkload } from "@/context/WorkloadContext";
+import { usePrefs } from "@/context/PrefsContext";
 import { filterEmails } from "@/lib/adaptationRules";
 import { WORKLOAD_LABELS } from "@/lib/constants";
 
@@ -18,6 +19,7 @@ import { WORKLOAD_LABELS } from "@/lib/constants";
 export default function InboxPage() {
   const { emails, selectedEmail, selectEmail } = useAppData();
   const { adaptation, focusMode, level } = useWorkload();
+  const { recordSignal } = usePrefs();
   const [showHidden, setShowHidden] = useState(false);
 
   const adaptedEmails = useMemo(
@@ -85,7 +87,13 @@ export default function InboxPage() {
                   size="sm"
                   variant="secondary"
                   className="mt-2"
-                  onClick={() => setShowHidden((v) => !v)}
+                  onClick={() => {
+                    setShowHidden((v) => {
+                      const next = !v;
+                      if (next) recordSignal("show_hidden_emails");
+                      return next;
+                    });
+                  }}
                 >
                   {showHidden ? "Hide low-priority again" : "Show all"}
                 </Button>

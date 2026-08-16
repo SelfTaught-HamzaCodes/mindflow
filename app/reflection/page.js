@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Card from "@/components/ui/Card";
 import { useAppData } from "@/context/AppDataContext";
 import { useWorkload } from "@/context/WorkloadContext";
+import { usePrefs } from "@/context/PrefsContext";
 import {
   buildResearchMetrics,
   formatFocusDuration,
@@ -17,7 +18,8 @@ import { WORKLOAD_LABELS, WORKSPACE_STATUS_TITLE } from "@/lib/constants";
  * after a short demo (focus activations, delayed notifs, etc).
  */
 export default function ReflectionPage() {
-  const { emails, tasks, notifications, user } = useAppData();
+  const { emails, tasks, notifications } = useAppData();
+  const { firstName } = usePrefs();
   const { adaptation, focusMode, level, highLoadStartedAt } = useWorkload();
   const [session, setSession] = useState(() => ({ focusActivations: 0 }));
 
@@ -35,8 +37,6 @@ export default function ReflectionPage() {
     session,
     highLoadStartedAt,
   });
-
-  const firstName = user?.name?.split(" ")[0] || "there";
 
   return (
     <div className="mx-auto max-w-2xl space-y-4">

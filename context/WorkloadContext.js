@@ -12,6 +12,8 @@ import {
 import { WORKLOAD_LEVELS, WORKLOAD_LABELS } from "@/lib/constants";
 import { calculateBehaviourState } from "@/lib/workloadEstimator";
 import { getAdaptationConfig } from "@/lib/adaptationRules";
+import { applyUserPrefs, wellnessTriggerMsForPrefs } from "@/lib/userPrefs";
+import { usePrefs } from "@/context/PrefsContext";
 import { saveSessionNote } from "@/lib/supabase";
 import {
   clearFocusResetMute,
@@ -48,6 +50,7 @@ const emptyMetrics = {
 };
 
 export function WorkloadProvider({ children }) {
+  const { prefs, recordSignal } = usePrefs();
   const [metrics, setMetrics] = useState(emptyMetrics);
   const [level, setLevel] = useState(WORKLOAD_LEVELS.NEUTRAL);
   const [score, setScore] = useState(0.5);
@@ -85,10 +88,15 @@ export function WorkloadProvider({ children }) {
   // only auto-enter Focus once per High spell — toggling off shouldn't immediately bounce back
   const autoFocusAppliedRef = useRef(false);
   const focusModeRef = useRef(focusMode);
+  const typingBaselineRef = useRef(prefs.typingBaseline);
 
   useEffect(() => {
     focusModeRef.current = focusMode;
   }, [focusMode]);
+
+  useEffect(() => {
+    typingBaselineRef.current = prefs.typingBaseline;
+  }, [prefs.typingBaseline]);
 
   useEffect(() => {
     setFocusResetMuted(isFocusResetMutedToday());
@@ -185,7 +193,11 @@ export function WorkloadProvider({ children }) {
   const updateFromMetrics = useCallback(
     (nextMetrics) => {
       setMetrics(nextMetrics);
-      const result = calculateBehaviourState(nextMetrics, levelRef.current);
+      const result = calculateBehaviourState(
+        nextMetrics,
+        levelRef.current,
+        typingBaselineRef.current,
+      );
       setLevel(result.level);
       setScore(result.score);
       setConfidence(result.confidence);
@@ -216,16 +228,21 @@ export function WorkloadProvider({ children }) {
       if (isFocusResetMutedToday()) return;
       const demoElapsed =
         (Date.now() - highSinceRef.current) * demoSpeedRef.current;
-      if (demoElapsed >= WELLNESS_TRIGGER_MS) {
+      const triggerMs = wellnessTriggerMsForPrefs(prefs);
+      if (demoElapsed >= triggerMs) {
         setWellnessVisible(true);
       }
     }, demoSpeed > 1 ? 400 : 2000);
     return () => clearInterval(id);
-  }, [wellnessSnoozedUntil, demoSpeed]);
+  }, [wellnessSnoozedUntil, demoSpeed, prefs]);
 
   const adaptation = useMemo(
-    () => getAdaptationConfig(effectiveLevel, { focusMode }),
-    [effectiveLevel, focusMode],
+    () =>
+      applyUserPrefs(
+        getAdaptationConfig(effectiveLevel, { focusMode }),
+        prefs,
+      ),
+    [effectiveLevel, focusMode, prefs],
   );
 
   const dismissWellness = useCallback(
@@ -237,7 +254,9 @@ export function WorkloadProvider({ children }) {
       if (muteToday) {
         muteFocusResetToday();
         setFocusResetMuted(true);
+        recordSignal("mute_reset");
       }
+      recordSignal(acceptedReset ? "accept_reset" : "dismiss_reset");
       bumpSessionMetric(
         acceptedReset
           ? "breakSuggestionsAccepted"
@@ -253,7 +272,7 @@ export function WorkloadProvider({ children }) {
         },
       });
     },
-    [effectiveLevel],
+    [effectiveLevel, recordSignal],
   );
 
   const snoozeWellness = useCallback(
@@ -262,7 +281,9 @@ export function WorkloadProvider({ children }) {
       if (muteToday) {
         muteFocusResetToday();
         setFocusResetMuted(true);
+        recordSignal("mute_reset");
       }
+      recordSignal("snooze_reset");
       bumpSessionMetric("breakSuggestionsDismissed");
       // Wall-clock snooze shortened by demo speed
       const wallSnooze = Math.max(1000, WELLNESS_SNOOZE_MS / demoSpeedRef.current);
@@ -279,7 +300,7 @@ export function WorkloadProvider({ children }) {
         },
       });
     },
-    [effectiveLevel],
+    [effectiveLevel, recordSignal],
   );
 
   /** Examiner shortcut — skip the 10-min wait so we can show Focus Reset on demand */
@@ -297,20 +318,24 @@ export function WorkloadProvider({ children }) {
   }, []);
 
   const toggleFocusMode = useCallback(() => {
-    setFocusMode((prev) => {
-      const next = !prev;
-      focusModeRef.current = next;
-      if (next) {
-        bumpSessionMetric("focusActivations");
-        setNotificationDelayStartedAt((anchor) => anchor ?? Date.now());
-      } else if (
+    const next = !focusModeRef.current;
+    focusModeRef.current = next;
+    setFocusMode(next);
+    // Keep preference signals out of the setState updater — React 19 treats
+    // updater fns as part of render, so setPrefs here would warn.
+    if (next) {
+      bumpSessionMetric("focusActivations");
+      recordSignal("enable_focus");
+      setNotificationDelayStartedAt((anchor) => anchor ?? Date.now());
+    } else {
+      recordSignal("exit_focus");
+      if (
         (forcedLevelRef.current || levelRef.current) !== WORKLOAD_LEVELS.HIGH
       ) {
         setNotificationDelayStartedAt(null);
       }
-      return next;
-    });
-  }, []);
+    }
+  }, [recordSignal]);
 
   const setFocusModeSafe = useCallback((nextValue) => {
     setFocusMode((prev) => {
@@ -350,7 +375,7 @@ export function WorkloadProvider({ children }) {
       snoozeWellness,
       previewWellness,
       clearWellnessMute,
-      wellnessTriggerMs: WELLNESS_TRIGGER_MS,
+      wellnessTriggerMs: wellnessTriggerMsForPrefs(prefs),
       highLoadStartedAt: notificationDelayStartedAt,
       behaviourHighSince,
       isDemoOverride: forcedLevel != null,
@@ -387,6 +412,7 @@ export function WorkloadProvider({ children }) {
       sessionStartedAt,
       toDemoMs,
       focusResetMuted,
+      prefs,
     ],
   );
 

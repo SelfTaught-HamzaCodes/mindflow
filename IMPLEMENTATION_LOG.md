@@ -2,6 +2,8 @@
 
 Technical development record for the Interaction Design Final Year Project. Entries are appended per milestone and written for inclusion in Chapter 4 (Implementation).
 
+Post-pilot UI changes from tester comments are recorded in `USER_FEEDBACK_LOG.md`.
+
 ---
 
 ## Milestone 1 - Foundation & Design System

@@ -3,16 +3,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppData } from "@/context/AppDataContext";
 import { useWorkload } from "@/context/WorkloadContext";
+import { usePrefs } from "@/context/PrefsContext";
 import { filterEmails, filterTasks } from "@/lib/adaptationRules";
-import {
-  WORKLOAD_LABELS,
-  WORKSPACE_STATUS_TITLE,
-  WORKLOAD_LEVELS,
-} from "@/lib/constants";
-import {
-  getDistractionCount,
-  getHiddenAdaptations,
-} from "@/lib/adaptationSummary";
+import { PRIMARY_FOCUS } from "@/lib/userPrefs";
 import PriorityWidget from "@/components/dashboard/PriorityWidget";
 import AnalyticsWidget from "@/components/dashboard/AnalyticsWidget";
 import CalendarWidget from "@/components/dashboard/CalendarWidget";
@@ -22,7 +15,19 @@ import BehaviourStatusWidget from "@/components/adaptive/BehaviourStatusWidget";
 import ResearchPanel from "@/components/adaptive/ResearchPanel";
 import FocusModeView from "@/components/focus/FocusModeView";
 import Card from "@/components/ui/Card";
-import Badge from "@/components/ui/Badge";
+
+function greetingFor(firstName, primaryFocus) {
+  const name = firstName && firstName !== "there" ? firstName : null;
+  const lead =
+    primaryFocus === PRIMARY_FOCUS.INBOX
+      ? "Inbox first"
+      : primaryFocus === PRIMARY_FOCUS.TASKS
+        ? "Tasks first"
+        : primaryFocus === PRIMARY_FOCUS.CALENDAR
+          ? "Today's schedule"
+          : "Your priorities";
+  return name ? `${lead}, ${name}` : lead;
+}
 
 // Shared enter/exit so panels dont feel like they just pop out of existence
 const fadeSlide = {
@@ -38,22 +43,16 @@ const fadeSlide = {
  * the same adaptation config — otherwise Insights and Tasks drifted apart.
  */
 export default function DashboardView() {
-  const { emails, tasks, toggleTaskStatus, user } = useAppData();
-  const { level, adaptation, focusMode } = useWorkload();
+  const { emails, tasks, toggleTaskStatus } = useAppData();
+  const { firstName, prefs } = usePrefs();
+  const { adaptation, focusMode } = useWorkload();
 
   const visibleEmails = filterEmails(emails, adaptation);
   const visibleTasks = filterTasks(tasks, adaptation);
   const showSecondary = adaptation.showSecondaryWidgets;
   const showAnalytics = adaptation.showAnalytics;
-  // Banner only when something actually got hidden — otherwise it's noise
-  const decluttering =
-    level === WORKLOAD_LEVELS.HIGH ||
-    !showAnalytics ||
-    !showSecondary;
-  const hidden = getHiddenAdaptations(adaptation, { focusMode: false });
-  const distractionCount = getDistractionCount(adaptation, {
-    focusMode: false,
-  });
+  const showActivity = adaptation.showActivityFeed !== false && showSecondary;
+  const showResearch = adaptation.showResearchPanel !== false;
 
   return (
     <AnimatePresence mode="wait">
@@ -71,60 +70,17 @@ export default function DashboardView() {
             adaptation.increaseWhitespace ? "space-y-6" : "space-y-4"
           }
         >
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-[var(--text-primary)]">
-                Dashboard
-              </h1>
-              <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                Adaptive workspace for {user.name}. Interface density responds
-                to {WORKSPACE_STATUS_TITLE.toLowerCase()}.
-              </p>
-            </div>
-            <Badge
-              tone={
-                level === "calm"
-                  ? "calm"
-                  : level === "high"
-                    ? "high"
-                    : "warning"
-              }
-            >
-              {WORKSPACE_STATUS_TITLE}: {WORKLOAD_LABELS[level]}
-            </Badge>
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-[var(--text-primary)]">
+              {greetingFor(firstName, prefs.primaryFocus)}
+            </h1>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">
+              {prefs.learnedNote ||
+                "A few surfaces stay tucked away until you need them."}
+            </p>
           </div>
 
           <BehaviourStatusWidget />
-
-          <AnimatePresence initial={false}>
-            {decluttering && hidden.length > 0 ? (
-              <motion.div
-                key="adaptation-summary"
-                {...fadeSlide}
-                className="rounded-2xl border border-orange-100 bg-orange-50/70 px-4 py-3"
-                role="status"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-sm font-medium text-orange-950">
-                    Interface adapted to estimated cognitive load
-                  </p>
-                  <p className="rounded-full bg-white px-2.5 py-0.5 text-xs font-medium text-orange-900">
-                    {distractionCount} distractions removed
-                  </p>
-                </div>
-                <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-                  {hidden.map((entry) => (
-                    <li
-                      key={entry.id}
-                      className="text-xs text-orange-900/80"
-                    >
-                      ✓ {entry.label}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
 
           <div
             className={`grid gap-4 transition-[gap] duration-300 ${
@@ -166,7 +122,7 @@ export default function DashboardView() {
             </AnimatePresence>
 
             <AnimatePresence initial={false} mode="popLayout">
-              {showSecondary ? (
+              {showActivity ? (
                 <motion.div key="activity" layout {...fadeSlide}>
                   <ActivityFeed />
                 </motion.div>
@@ -204,7 +160,7 @@ export default function DashboardView() {
             />
           </Card>
 
-          <ResearchPanel />
+          {showResearch ? <ResearchPanel /> : null}
         </motion.div>
       )}
     </AnimatePresence>

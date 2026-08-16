@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { useAppData } from "@/context/AppDataContext";
 import { useWorkload } from "@/context/WorkloadContext";
+import { usePrefs } from "@/context/PrefsContext";
+import { DENSITY } from "@/lib/userPrefs";
 import LogoMark from "@/components/layout/LogoMark";
 import DemoControls from "@/components/adaptive/DemoControls";
 import { logoFont } from "@/lib/logoFont";
@@ -36,6 +38,7 @@ export default function Sidebar({
   const pathname = usePathname();
   const data = useAppData();
   const { adaptation, level } = useWorkload();
+  const { prefs } = usePrefs();
   const collapseDesktop = collapsed;
   // Bigger badges under Elevated/High so priority spikes are harder to miss
   const emphasizeBadges = Boolean(adaptation.emphasizeBadges);
@@ -162,7 +165,9 @@ export default function Sidebar({
             );
           })}
 
-          {showRecommendation && !collapseDesktop ? (
+          {showRecommendation &&
+          !collapseDesktop &&
+          prefs.density !== DENSITY.QUIET ? (
             <div className="mx-1 mt-4 rounded-2xl border border-amber-100 bg-amber-50/80 px-3 py-3">
               <p className="inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-900">
                 <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
@@ -199,8 +204,7 @@ export default function Sidebar({
               collapseDesktop ? "lg:hidden" : ""
             }`}
           >
-            Interaction Design FYP · Sample data only · No real email
-            connections
+            Sample data · FYP
             {level === "high" ? " · Insights hidden" : ""}
           </p>
         </div>

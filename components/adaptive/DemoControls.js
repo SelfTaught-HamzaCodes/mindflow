@@ -1,20 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  useWorkload,
-  WELLNESS_TRIGGER_MS,
-  DEMO_SPEED_OPTIONS,
-} from "@/context/WorkloadContext";
-import { useAppData } from "@/context/AppDataContext";
+import { useWorkload, DEMO_SPEED_OPTIONS } from "@/context/WorkloadContext";
+import { usePrefs } from "@/context/PrefsContext";
 import { WORKLOAD_LEVELS, WORKLOAD_LABELS } from "@/lib/constants";
 import { formatDuration } from "@/lib/format";
 
-const simBtn =
-  "rounded-md border border-[var(--border)] bg-[var(--surface)] px-1 py-1 text-[10px] font-medium text-[var(--text-secondary)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]";
-
 /**
- * Compact examiner controls: session clock, speed, workload override, simulate.
+ * Compact examiner controls: session clock, speed, workload override.
  * Lives in the sidebar so demos dont need a seperate "admin" page — examiners
  * can force High mid-walkthrough without leaving the UI.
  */
@@ -32,12 +25,9 @@ export default function DemoControls({ collapsed = false }) {
     focusResetMuted,
     wellnessVisible,
     level,
+    wellnessTriggerMs,
   } = useWorkload();
-  const {
-    injectUrgentEmail,
-    injectHighPriorityTask,
-    injectNotifications,
-  } = useAppData();
+  const { resetOnboarding } = usePrefs();
 
   const [tick, setTick] = useState(null);
 
@@ -58,9 +48,9 @@ export default function DemoControls({ collapsed = false }) {
       : null;
   const resetRemainingMs =
     highDemoMs != null
-      ? Math.max(0, WELLNESS_TRIGGER_MS - highDemoMs)
+      ? Math.max(0, wellnessTriggerMs - highDemoMs)
       : null;
-  const wallSecsForReset = Math.round(WELLNESS_TRIGGER_MS / demoSpeed / 1000);
+  const wallSecsForReset = Math.round(wellnessTriggerMs / demoSpeed / 1000);
   const isHigh = level === WORKLOAD_LEVELS.HIGH;
 
   const selectClass =
@@ -105,38 +95,34 @@ export default function DemoControls({ collapsed = false }) {
         </span>
       </div>
 
-      <div className="rounded-md bg-[var(--surface)]/80 px-1.5 py-1">
-        {focusResetMuted ? (
-          <p className="text-[10px] leading-snug text-amber-800">
-            Focus Reset muted today.{" "}
-            <button
-              type="button"
-              className="font-medium underline underline-offset-2"
-              onClick={clearWellnessMute}
-            >
-              Clear mute
-            </button>
-          </p>
-        ) : wellnessVisible ? (
-          <p className="text-[10px] font-medium text-emerald-800">
-            Focus Reset is open
-          </p>
-        ) : isHigh && resetRemainingMs != null ? (
-          <p className="text-[10px] font-medium text-amber-800">
-            High for {formatDuration(highDemoMs)} · Reset in{" "}
-            {formatDuration(resetRemainingMs)}
-            <span className="mt-0.5 block font-normal text-[var(--text-muted)]">
-              ~{wallSecsForReset}s wall at ×{demoSpeed}
-            </span>
-          </p>
-        ) : (
-          <p className="text-[10px] leading-snug text-[var(--text-muted)]">
-            Focus Reset needs <span className="font-medium">High</span> for 10
-            demo-min (not session time). Set override to High, then wait ~
-            {wallSecsForReset}s.
-          </p>
-        )}
-      </div>
+      {focusResetMuted || wellnessVisible || (isHigh && resetRemainingMs != null) ? (
+        <div className="rounded-md bg-[var(--surface)]/80 px-1.5 py-1">
+          {focusResetMuted ? (
+            <p className="text-[10px] leading-snug text-amber-800">
+              Focus Reset muted today.{" "}
+              <button
+                type="button"
+                className="font-medium underline underline-offset-2"
+                onClick={clearWellnessMute}
+              >
+                Clear mute
+              </button>
+            </p>
+          ) : wellnessVisible ? (
+            <p className="text-[10px] font-medium text-emerald-800">
+              Focus Reset is open
+            </p>
+          ) : (
+            <p className="text-[10px] font-medium text-amber-800">
+              High for {formatDuration(highDemoMs)} · Reset in{" "}
+              {formatDuration(resetRemainingMs)}
+              <span className="mt-0.5 block font-normal text-[var(--text-muted)]">
+                ~{wallSecsForReset}s wall at ×{demoSpeed}
+              </span>
+            </p>
+          )}
+        </div>
+      ) : null}
 
       <div className="grid grid-cols-2 gap-1.5">
         <select
@@ -166,44 +152,19 @@ export default function DemoControls({ collapsed = false }) {
         </select>
       </div>
 
-      <div>
-        <p className="mb-1 text-[9px] uppercase tracking-wide text-[var(--text-muted)]">
-          Simulate · sample data
-        </p>
-        <div className="grid grid-cols-3 gap-1">
-          <button
-            type="button"
-            className={simBtn}
-            onClick={injectUrgentEmail}
-            title="Add an urgent unread sample email"
-          >
-            +Urgent
-          </button>
-          <button
-            type="button"
-            className={simBtn}
-            onClick={injectHighPriorityTask}
-            title="Add a high-priority sample task"
-          >
-            +Task
-          </button>
-          <button
-            type="button"
-            className={simBtn}
-            onClick={() => injectNotifications(5)}
-            title="Add five sample notifications"
-          >
-            +5 Notifs
-          </button>
-        </div>
-      </div>
-
       <button
         type="button"
         onClick={previewWellness}
         className="w-full rounded-md px-1 py-1 text-[10px] font-medium text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
       >
         Preview Focus Reset
+      </button>
+      <button
+        type="button"
+        onClick={resetOnboarding}
+        className="w-full rounded-md px-1 py-1 text-[10px] font-medium text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+      >
+        Replay onboarding
       </button>
     </div>
   );

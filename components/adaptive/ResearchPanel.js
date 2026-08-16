@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, FlaskConical } from "lucide-react";
 import { useWorkload } from "@/context/WorkloadContext";
+import { usePrefs } from "@/context/PrefsContext";
 import { WORKLOAD_LABELS, WORKLOAD_UI_TITLE } from "@/lib/constants";
 import { ESTIMATOR_THRESHOLDS } from "@/lib/workloadEstimator";
+import { resolveEstimatorConfig } from "@/lib/typingBaseline";
 import Card from "@/components/ui/Card";
 
 /**
@@ -25,28 +27,28 @@ export default function ResearchPanel() {
     previewWellness,
     wellnessTriggerMs,
   } = useWorkload();
+  const { prefs } = usePrefs();
+  const estimator = resolveEstimatorConfig(prefs.typingBaseline);
+  const t = estimator.thresholds;
+  const backspaceWeightPct = Math.round(estimator.weights.backspace * 100);
 
   return (
-    <Card className="mt-6" padding={false}>
+    <Card className="mt-4" padding={false}>
       <button
         type="button"
-        className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--accent)]"
+        className="flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--accent)]"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls="research-panel-content"
       >
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--surface-muted)] text-[var(--text-secondary)]">
-            <FlaskConical className="h-4 w-4" aria-hidden="true" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-[var(--text-primary)]">
-              Research Panel
-            </p>
-            <p className="text-xs text-[var(--text-muted)]">
-              Behaviour metrics and estimator transparency
-            </p>
-          </div>
+        <div className="flex items-center gap-2">
+          <FlaskConical
+            className="h-3.5 w-3.5 text-[var(--text-muted)]"
+            aria-hidden="true"
+          />
+          <p className="text-xs font-medium text-[var(--text-secondary)]">
+            Research instrumentation
+          </p>
         </div>
         {open ? (
           <ChevronUp className="h-4 w-4 text-[var(--text-muted)]" />
@@ -134,11 +136,12 @@ export default function ResearchPanel() {
               Key thresholds
             </p>
             <p className="mt-1">
-              Calm WPM ≥ {ESTIMATOR_THRESHOLDS.calmWpmMin}; High WPM ≤{" "}
-              {ESTIMATOR_THRESHOLDS.highWpmMax}; High pause ≥{" "}
-              {ESTIMATOR_THRESHOLDS.highPauseMinMs}ms; High backspace ≥{" "}
-              {Math.round(ESTIMATOR_THRESHOLDS.highBackspaceMin * 100)}%; min
-              events {ESTIMATOR_THRESHOLDS.minEvents}.
+              Calm WPM ≥ {t.calmWpmMin}; High WPM ≤ {t.highWpmMax}; High
+              pause ≥ {t.highPauseMinMs}ms; High backspace ≥{" "}
+              {Math.round(t.highBackspaceMin * 100)}%; backspace weight{" "}
+              {backspaceWeightPct}%
+              {prefs.typingBaseline ? " (personalised)" : ""}; min events{" "}
+              {ESTIMATOR_THRESHOLDS.minEvents}.
             </p>
             <p className="mt-2">
               Graduated response: High load → Focus Mode immediately; Focus Reset

@@ -2,15 +2,11 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Check, Focus, HelpCircle, MoreHorizontal, X } from "lucide-react";
+import { Focus, HelpCircle, MoreHorizontal, X } from "lucide-react";
 import { useAppData } from "@/context/AppDataContext";
 import { useWorkload } from "@/context/WorkloadContext";
 import { filterEmails, filterTasks } from "@/lib/adaptationRules";
-import {
-  getDistractionCount,
-  getHiddenAdaptations,
-  PANEL_COUNTS,
-} from "@/lib/adaptationSummary";
+import { PANEL_COUNTS } from "@/lib/adaptationSummary";
 import PriorityInbox from "@/components/focus/PriorityInbox";
 import TodaysTasks from "@/components/focus/TodaysTasks";
 import BreakReminder from "@/components/focus/BreakReminder";
@@ -49,8 +45,6 @@ export default function FocusModeView() {
 
   const priorityEmails = filterEmails(emails, adaptation);
   const todaysTasks = filterTasks(tasks, adaptation);
-  const hidden = getHiddenAdaptations(adaptation, { focusMode: true });
-  const distractionCount = getDistractionCount(adaptation, { focusMode: true });
 
   return (
     <motion.div
@@ -132,31 +126,6 @@ export default function FocusModeView() {
               </div>
             ) : null}
           </div>
-        </div>
-
-        <div className="mt-4 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-sky-100/80">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
-              Interface Simplifications
-            </p>
-            <p className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-800">
-              {distractionCount} distractions removed
-            </p>
-          </div>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-            {hidden.map((entry) => (
-              <li
-                key={entry.id}
-                className="flex items-start gap-2 text-sm text-[var(--text-secondary)]"
-              >
-                <Check
-                  className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600"
-                  aria-hidden="true"
-                />
-                {entry.label}
-              </li>
-            ))}
-          </ul>
         </div>
       </motion.div>
 

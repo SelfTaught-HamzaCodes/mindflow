@@ -11,6 +11,7 @@ import AnimatedNumber, {
 } from "@/components/ui/AnimatedNumber";
 import { useTypingBehaviour } from "@/hooks/useTypingBehaviour";
 import { useWorkload } from "@/context/WorkloadContext";
+import { usePrefs } from "@/context/PrefsContext";
 import {
   WORKLOAD_LABELS,
   WORKSPACE_STATUS_TITLE,
@@ -36,6 +37,7 @@ export default function ComposePage() {
     focusMode,
     setFocusMode,
   } = useWorkload();
+  const { prefs } = usePrefs();
 
   const { handleKeyDown, reset, metrics: localMetrics } = useTypingBehaviour({
     onMetricsChange: updateFromMetrics,
@@ -93,7 +95,11 @@ export default function ComposePage() {
         ? "Adaptive suggestions are currently active."
         : "Standard workspace density remains active.";
 
-  const summaryBullets = getExplainabilityReasons(metrics, level);
+  const summaryBullets = getExplainabilityReasons(
+    metrics,
+    level,
+    prefs.typingBaseline,
+  );
   const summaryLines =
     summaryBullets.length > 0
       ? summaryBullets.map((r) => r.label)

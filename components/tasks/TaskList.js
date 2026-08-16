@@ -24,7 +24,7 @@ export default function TaskList({
 
   return (
     <ul className="space-y-3" aria-label="Tasks">
-      <AnimatePresence initial={false} mode="popLayout">
+      <AnimatePresence initial={false}>
         {tasks.map((task) => (
           <TaskItem
             key={task.id}

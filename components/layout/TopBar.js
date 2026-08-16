@@ -1,10 +1,11 @@
 "use client";
 
 import { Menu, Focus, PanelLeftClose, PanelLeft } from "lucide-react";
-import { useAppData } from "@/context/AppDataContext";
 import { useWorkload } from "@/context/WorkloadContext";
+import { usePrefs } from "@/context/PrefsContext";
 import WorkloadBadge from "@/components/adaptive/WorkloadBadge";
 import NotificationPanel from "@/components/notifications/NotificationPanel";
+import PreferencesMenu from "@/components/layout/PreferencesMenu";
 import Button from "@/components/ui/Button";
 
 export default function TopBar({
@@ -12,9 +13,8 @@ export default function TopBar({
   collapsed = false,
   onToggleCollapse,
 }) {
-  const { user } = useAppData();
+  const { displayUser, firstName } = usePrefs();
   const { focusMode, toggleFocusMode } = useWorkload();
-  const firstName = user.name.split(" ")[0];
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--surface)]/85 px-4 backdrop-blur-md sm:px-6">
@@ -45,7 +45,7 @@ export default function TopBar({
           <span className="font-medium">{firstName}</span>
           <span className="hidden text-[var(--text-muted)] sm:inline">
             {" "}
-            · {user.role}
+            · {displayUser.role}
           </span>
         </p>
       </div>
@@ -72,13 +72,7 @@ export default function TopBar({
         <div className="mx-0.5 hidden h-5 w-px bg-[var(--border)] sm:block" aria-hidden="true" />
 
         <NotificationPanel />
-        <div
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[11px] font-semibold text-[var(--accent)]"
-          aria-label={`Signed in as ${user.name}`}
-          title={`${user.name} · ${user.organisation}`}
-        >
-          {user.avatarInitials}
-        </div>
+        <PreferencesMenu />
       </div>
     </header>
   );

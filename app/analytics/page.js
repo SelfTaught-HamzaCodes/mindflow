@@ -7,6 +7,7 @@ import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import { useAppData } from "@/context/AppDataContext";
 import { useWorkload } from "@/context/WorkloadContext";
+import { usePrefs } from "@/context/PrefsContext";
 import {
   buildResearchMetrics,
   formatFocusDuration,
@@ -49,6 +50,7 @@ const TIMELINE_PREVIEW = 4;
 export default function BehaviourInsightsPage() {
   const { emails, tasks, notifications } = useAppData();
   const { adaptation, focusMode, level, highLoadStartedAt } = useWorkload();
+  const { recordSignal } = usePrefs();
   const [session, setSession] = useState(() => ({ focusActivations: 0 }));
   const [timelineExpanded, setTimelineExpanded] = useState(false);
 
@@ -57,6 +59,10 @@ export default function BehaviourInsightsPage() {
     const id = setInterval(() => setSession(loadSessionMetrics()), 2000);
     return () => clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    recordSignal("open_insights");
+  }, [recordSignal]);
 
   const hidden = !adaptation.showAnalytics || focusMode;
   const metrics = buildResearchMetrics({

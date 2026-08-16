@@ -1,8 +1,11 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { render, screen, act, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { AppDataProvider } from "@/context/AppDataContext";
+import { PrefsProvider } from "@/context/PrefsContext";
 import { WorkloadProvider, useWorkload, WELLNESS_TRIGGER_MS } from "@/context/WorkloadContext";
 import { WORKLOAD_LEVELS } from "@/lib/constants";
+import { completeOnboarding } from "@/lib/userPrefs";
 import { clearFocusResetMute } from "@/lib/wellnessPrefs";
 
 vi.mock("@/lib/supabase", () => ({
@@ -138,6 +141,39 @@ describe("WorkloadContext", () => {
     expect(screen.getByTestId("focus").textContent).toBe("true");
     await user.click(screen.getByRole("button", { name: "Exit Focus" }));
     expect(screen.getByTestId("focus").textContent).toBe("false");
+  });
+
+  it("does not set prefs state while WorkloadProvider is rendering", async () => {
+    completeOnboarding({ displayName: "Sam" });
+    const errors = [];
+    const origError = console.error;
+    console.error = (...args) => {
+      errors.push(args.map(String).join(" "));
+      origError(...args);
+    };
+
+    const user = userEvent.setup();
+    render(
+      <AppDataProvider>
+        <PrefsProvider>
+          <WorkloadProvider>
+            <Probe />
+          </WorkloadProvider>
+        </PrefsProvider>
+      </AppDataProvider>,
+    );
+
+    try {
+      await user.click(screen.getByRole("button", { name: "Toggle Focus" }));
+      expect(screen.getByTestId("focus").textContent).toBe("true");
+      await user.click(screen.getByRole("button", { name: "Toggle Focus" }));
+      expect(screen.getByTestId("focus").textContent).toBe("false");
+      expect(
+        errors.some((msg) => msg.includes("Cannot update a component")),
+      ).toBe(false);
+    } finally {
+      console.error = origError;
+    }
   });
 
   it("updates live estimate from high-load typing metrics", async () => {

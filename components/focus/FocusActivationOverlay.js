@@ -2,16 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Focus } from "lucide-react";
+import { Check, Focus, X } from "lucide-react";
 import { useWorkload } from "@/context/WorkloadContext";
 import { FOCUS_SHOWN, PANEL_COUNTS } from "@/lib/adaptationSummary";
-
-const DISPLAY_MS = 2800;
+import Button from "@/components/ui/Button";
 
 /**
- * Short overlay when Focus turns on.
- * Without it, auto-Focus felt invisible in demos — people thought nothing
- * happened. 2.8s is long enough to read, short enough to not annoy.
+ * Overlay when Focus turns on (Elevated → High).
+ * Stays up until the user dismisses it — auto-hide made the change easy to miss.
  */
 export default function FocusActivationOverlay() {
   const { focusMode } = useWorkload();
@@ -22,12 +20,17 @@ export default function FocusActivationOverlay() {
     const wasOff = !prevFocusRef.current;
     prevFocusRef.current = focusMode;
 
-    if (!(focusMode && wasOff)) return undefined;
-
-    setVisible(true);
-    const id = setTimeout(() => setVisible(false), DISPLAY_MS);
-    return () => clearTimeout(id);
+    if (focusMode && wasOff) {
+      setVisible(true);
+    }
+    if (!focusMode) {
+      setVisible(false);
+    }
   }, [focusMode]);
+
+  function dismiss() {
+    setVisible(false);
+  }
 
   return (
     <AnimatePresence>
@@ -38,9 +41,9 @@ export default function FocusActivationOverlay() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          role="status"
-          aria-live="polite"
-          aria-label="Focus Mode activated"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="focus-activation-title"
         >
           <motion.div
             initial={{ opacity: 0, y: 12, scale: 0.97 }}
@@ -49,25 +52,34 @@ export default function FocusActivationOverlay() {
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="w-full max-w-md rounded-3xl border border-[var(--border)] bg-white px-6 py-6 shadow-[var(--shadow-lg)]"
           >
-            <div className="flex items-center gap-2 text-sky-800">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-50">
-                <Focus className="h-4 w-4" aria-hidden="true" />
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-2 text-sky-800">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-50">
+                  <Focus className="h-4 w-4" aria-hidden="true" />
+                </div>
+                <p
+                  id="focus-activation-title"
+                  className="text-sm font-semibold tracking-tight"
+                >
+                  Focus Mode on
+                </p>
               </div>
-              <p className="text-sm font-semibold tracking-tight">
-                Focus Mode Activated
-              </p>
+              <button
+                type="button"
+                onClick={dismiss}
+                className="rounded-xl p-2 text-[var(--text-muted)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                aria-label="Dismiss Focus Mode notice"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
 
             <p className="mt-3 text-sm leading-relaxed text-[var(--text-secondary)]">
-              Estimated cognitive load increased based on recent interaction
-              behaviour. We&apos;ve reduced visible information from{" "}
-              {PANEL_COUNTS.full} panels to {PANEL_COUNTS.focus}.
+              Estimated load increased from recent interaction. Visible panels
+              went from {PANEL_COUNTS.full} to {PANEL_COUNTS.focus}.
             </p>
 
-            <p className="mt-4 text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
-              To reduce information overload
-            </p>
-            <ul className="mt-2 space-y-2">
+            <ul className="mt-4 space-y-2">
               {FOCUS_SHOWN.map((label) => (
                 <li
                   key={label}
@@ -81,6 +93,10 @@ export default function FocusActivationOverlay() {
                 </li>
               ))}
             </ul>
+
+            <Button className="mt-5 w-full" onClick={dismiss}>
+              Got it
+            </Button>
           </motion.div>
         </motion.div>
       ) : null}
