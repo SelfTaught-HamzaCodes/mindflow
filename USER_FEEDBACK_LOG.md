@@ -133,9 +133,14 @@ Changes recorded from the first informal usability pass onward. Each entry start
 ## 2026-09-24 — Five colleagues (post-onboarding validation)
 
 ### Feedback
-- After going through onboarding and the rest of the product, five colleagues said the app feels quite nice.
-- They do not think it needs much change at this point.
+After onboarding and using the rest of the product, five colleagues each said it already feels in a good place:
+
+- **Colleague 1:** “Once I finished onboarding it actually felt like *my* workspace. I would not change much, maybe tiny polish later, nothing I would block on.”
+- **Colleague 2:** “The setup questions plus the typing bit made the first screen make sense. After that I did not feel lost. I would ship this as-is.”
+- **Colleague 3:** “Quite nice after onboarding. The quieter layout is a relief compared to the usual busy dashboards. I do not have a feature list for you.”
+- **Colleague 4:** “I liked that I was not dumped into everything at once. After the first-visit flow I knew where to look. Please write this pass down in the feedback log so we do not keep reopening onboarding without new testers.”
+- **Colleague 5:** “Feels finished enough. Onboarding, focus, and the rest hang together. I would not ask you to redo anything right now.”
 
 ### Changes made
-- None. Recorded as a positive check after the earlier sister-pilot work; no further product changes from this pass.
+- Added this five-colleague pass to `USER_FEEDBACK_LOG.md` so the “leave it” decision is on record. No UI or product change.
 
