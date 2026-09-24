@@ -128,3 +128,14 @@ Changes recorded from the first informal usability pass onward. Each entry start
 - Onboarding now asks people to copy: “The morning notes are on my desk. I will send them after the meeting.”
 - Progress is “keep going until the sentence is done” instead of a keystroke count.
 
+---
+
+## 2026-09-24 — Five colleagues (post-onboarding validation)
+
+### Feedback
+- After going through onboarding and the rest of the product, five colleagues said the app feels quite nice.
+- They do not think it needs much change at this point.
+
+### Changes made
+- None. Recorded as a positive check after the earlier sister-pilot work; no further product changes from this pass.
+
